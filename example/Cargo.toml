@@ -1,0 +1,9 @@
+[package]
+name = "owatest"
+version = "0.1.0"
+authors = ["Nick Gamroth <thebeekeeper@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+owa4x-sys = { path = "../owa4x-sys" }
+owa4x = { path = "../owa4x" }
