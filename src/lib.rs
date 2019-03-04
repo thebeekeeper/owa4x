@@ -4,6 +4,7 @@ extern crate log;
 
 pub mod gps;
 pub mod leds;
+pub mod io;
 
 use owa4x_sys as owa;
 
