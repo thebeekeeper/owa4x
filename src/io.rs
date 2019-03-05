@@ -1,7 +1,7 @@
 use owa4x_sys as owa;
 use std::os::raw::{c_uchar, c_int};
 
-#[derive(Copy, Clone)]
+#[derive(Debug, Copy, Clone)]
 pub enum DigitalPin {
     Pin0 = 0,
     Pin1 = 1,
@@ -15,7 +15,7 @@ pub enum DigitalPin {
     Pin9 = 9,
 }
 
-#[derive(Copy, Clone)]
+#[derive(Debug, Copy, Clone)]
 pub enum AnalogPin {
     Ain0 = 0,
     Ain1 = 1,
@@ -23,6 +23,8 @@ pub enum AnalogPin {
     Ain3 = 3,
 }
 
+
+#[derive(Debug, Copy, Clone)]
 pub struct Io {
 }
 

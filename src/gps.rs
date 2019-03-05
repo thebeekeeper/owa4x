@@ -1,10 +1,11 @@
 use owa4x_sys as owa;
 use std::ffi::c_void;
 
+#[derive(Debug, Copy, Clone)]
 pub struct Gps {
 }
 
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 pub struct GpsPosition {
     #[doc = "< Altitude in meters"]
     pub altitude: f64,

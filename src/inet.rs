@@ -1,6 +1,7 @@
 use owa4x_sys as owa;
 use std::ffi::c_void;
 
+#[derive(Debug, Copy, Clone)]
 pub struct Inet {
 }
 

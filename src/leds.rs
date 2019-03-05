@@ -1,5 +1,6 @@
 use owa4x_sys as owa;
 
+#[derive(Debug, Copy, Clone)]
 pub enum PanelLed {
     Yellow,
     Green,
@@ -7,6 +8,7 @@ pub enum PanelLed {
     Orange
 }
 
+#[derive(Debug, Copy, Clone)]
 pub struct Leds {
 }
 
