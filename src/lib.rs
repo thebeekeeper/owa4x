@@ -6,6 +6,7 @@ pub mod gps;
 pub mod leds;
 pub mod inet;
 pub mod io;
+pub mod gprs;
 
 use owa4x_sys as owa;
 

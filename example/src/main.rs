@@ -1,6 +1,7 @@
 use owa4x::gps::Gps;
 use owa4x::leds::{Leds, PanelLed};
 use owa4x::io::{Io, DigitalPin, AnalogPin};
+use owa4x::inet::{Inet, InetConfig};
 use std::{thread, time};
 
 fn main() {
@@ -16,6 +17,7 @@ fn main() {
             println!("Pin 2 state: {}", p);
             let analog = io.read_analog(AnalogPin::Ain3);
             println!("Analog input 3 value: {}", analog);
+            connect_gprs();
         }
         else {
             println!("Error starting IO");
@@ -39,5 +41,19 @@ fn run_gps_test() {
             println!("GPS position: {:?}", pos);
         }
         thread::sleep(time::Duration::from_millis(1000));
+    }
+}
+
+fn connect_gprs() { 
+    if let Ok(()) = owa4x::gprs::Gprs::initialize() {
+    let inet = Inet::new();
+    let cfg = InetConfig {
+        username: "".to_string(),
+        password: "".to_string(),
+        dns_1: String::from("8.8.8.8"),
+        dns_2: String::from("8.8.4.4"),
+        ap_name: "hologram".to_string(),
+    };
+    inet.initialize(cfg);
     }
 }
