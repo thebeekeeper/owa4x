@@ -11,7 +11,7 @@ fn main() {
     if let Ok(_) = owa4x::start_rtu() {
         println!("Starting IO");
         if let Ok(_) = owa4x::start_io() {
-            //run_gps_test();
+            run_gps_test();
             let io = Io { };
             let p = io.read_digital(DigitalPin::Pin2);
             println!("Pin 2 state: {}", p);
@@ -33,6 +33,8 @@ fn run_gps_test() {
     let leds = Leds::new();
     println!("Initializing GPS");
     gps.initialize();
+    let sats = gps.get_satellites();
+    println!("Satellites: {:?}", sats);
     let mut led_status = false;
     loop {
         leds.set_state(PanelLed::Green, led_status);

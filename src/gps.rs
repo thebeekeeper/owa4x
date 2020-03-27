@@ -33,6 +33,18 @@ pub struct GpsPosition {
     pub longitude: f64,
 }
 
+#[derive(Debug, Copy, Clone)]
+pub struct Satellite {
+    #[doc = "< Satellite ID"]
+    pub id: u32,
+    #[doc = "< Satellite elevation in degrees"]
+    pub elevation: u32,
+    #[doc = "< Satellite azimuth in degrees"]
+    pub azimuth: u32,
+    #[doc = "< Signal to noise ratio, from 0-99"]
+    pub snr: u32,
+}
+
 impl Gps {
     pub fn new() -> Self {
         Gps { }
@@ -107,5 +119,34 @@ impl Gps {
                 None
             }
         }
+    }
+
+    pub fn get_satellites(&self) -> Vec<Satellite> {
+        trace!("Getting satellites in view");
+        let mut l: owa::tGSV_Data = Default::default();
+        let mut res = 0xff;
+        unsafe {
+            res = owa::GPS_GetSV_inView(&mut l);
+        }
+        let mut rval = Vec::new();
+        match res as u32 {
+            owa::NO_ERROR => {
+                trace!("got satellites response. satellites in view: {}", l.SV_InView);
+                for i in 0..l.SV_InView {
+                    let s = l.SV[i as usize];
+                    trace!("satellite {} - id: {}, elevation: {}, azimuth: {}, snr: {}", i, s.SV_Id, s.SV_Elevation, s.SV_Azimuth, s.SV_SNR);
+                    rval.push(Satellite {
+                        id: s.SV_Id as u32,
+                        elevation: s.SV_Elevation as u32,
+                        azimuth: s.SV_Azimuth as u32,
+                        snr: s.SV_SNR as u32,
+                    });
+                }
+            },
+            e => {
+                error!("Error getting satellites: {}", e);
+            }
+        };
+        rval
     }
 }
