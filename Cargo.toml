@@ -5,7 +5,7 @@ authors = ["Nick Gamroth <thebeekeeper@gmail.com>"]
 edition = "2018"
 description = "Idiomatic wrapper around the owa4x-sys crate"
 license = "MIT"
-repository = "https://github.com/thebeekeeper/owa4x-sys"
+repository = "https://github.com/thebeekeeper/owa4x"
 
 [dependencies]
 owa4x-sys = "0.1.3"
