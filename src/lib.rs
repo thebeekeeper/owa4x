@@ -1,6 +1,8 @@
 extern crate owa4x_sys;
 #[macro_use]
 extern crate log;
+#[macro_use]
+extern crate num_derive;
 
 pub mod gps;
 pub mod leds;

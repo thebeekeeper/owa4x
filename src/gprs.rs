@@ -8,10 +8,14 @@ impl Gprs {
         let mut gsm_config = owa::TGSM_MODULE_CONFIGURATION::default();
         let gsm_ptr: *mut c_void = &mut gsm_config as *mut _ as *mut c_void;
         unsafe {
-            if owa::GSM_Initialize(gsm_ptr) != (owa::NO_ERROR as i32) {
+            let err = owa::GSM_Initialize(gsm_ptr);
+            if err != (owa::NO_ERROR as i32) {
+                error!("GSM init error: {}", err);
                 return Err("Failed to initialize GSM");
             }
-            if owa::GSM_Start() != (owa::NO_ERROR as i32) {
+            let err = owa::GSM_Start();
+            if err != (owa::NO_ERROR as i32) {
+                error!("GSM start error: {}", err);
                 return Err("Failed to start GSM");
             }
         }
