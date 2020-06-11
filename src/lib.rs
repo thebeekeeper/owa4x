@@ -2,11 +2,11 @@ extern crate owa4x_sys;
 #[macro_use]
 extern crate log;
 
+pub mod gprs;
 pub mod gps;
-pub mod leds;
 pub mod inet;
 pub mod io;
-pub mod gprs;
+pub mod leds;
 
 use owa4x_sys as owa;
 
@@ -32,7 +32,7 @@ pub fn start_io() -> Result<u8, String> {
             return Err(format!("Error calling IO_Initialize: {}", io_init));
         }
 
-        let io_start = owa::IO_Start(); 
+        let io_start = owa::IO_Start();
         if io_start != (owa::NO_ERROR as i32) {
             owa::IO_Finalize();
             return Err(format!("Error calling IO_Start: {}", io_start));
@@ -40,7 +40,6 @@ pub fn start_io() -> Result<u8, String> {
     }
     Ok(0)
 }
-
 
 pub fn start_wifi() -> bool {
     unsafe {

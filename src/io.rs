@@ -1,5 +1,5 @@
 use owa4x_sys as owa;
-use std::os::raw::{c_uchar, c_int};
+use std::os::raw::{c_int, c_uchar};
 
 #[derive(Debug, Copy, Clone)]
 pub enum DigitalPin {
@@ -23,10 +23,8 @@ pub enum AnalogPin {
     Ain3 = 3,
 }
 
-
 #[derive(Debug, Copy, Clone)]
-pub struct Io {
-}
+pub struct Io {}
 
 impl Io {
     pub fn read_digital(&self, pin: DigitalPin) -> bool {
