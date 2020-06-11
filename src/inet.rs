@@ -61,12 +61,12 @@ impl Inet {
         inet_config.wBearerParameters = gprs_ptr;
         let net_ptr: *mut c_void = &mut inet_config as *mut _ as *mut c_void;
 
-        println!("Calling inet init");
+        trace!("Calling inet init");
         unsafe {
-        let r = owa::iNet_Initialize(net_ptr);
-        println!("inet init: {}", r);
-        let r = owa::iNet_Start();
-        println!("inet start: {}", r);
+            let r = owa::iNet_Initialize(net_ptr);
+            trace!("inet init: {}", r);
+            let r = owa::iNet_Start();
+            trace!("inet start: {}", r);
         }
 
 
@@ -75,6 +75,6 @@ impl Inet {
 
 }
 #[no_mangle]
-    pub extern "C" fn inet_event_handler(pToEvent: *mut owa::INET_Events) {
-        println!("callback");
+    pub extern "C" fn inet_event_handler(_p_to_event: *mut owa::INET_Events) {
+        trace!("inet_event_handler callback");
     }

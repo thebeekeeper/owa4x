@@ -103,7 +103,7 @@ impl Gps {
     pub fn get_position(&self) -> Option<GpsPosition> {
         trace!("Getting position");
         let mut l: owa::tPOSITION_DATA = Default::default();
-        let mut get_pos = 0xff;
+        let get_pos: i32;
         unsafe {
             get_pos = owa::GPS_GetAllPositionData(&mut l);
         }
@@ -124,7 +124,7 @@ impl Gps {
     pub fn get_satellites(&self) -> Vec<Satellite> {
         trace!("Getting satellites in view");
         let mut l: owa::tGSV_Data = Default::default();
-        let mut res = 0xff;
+        let res: i32;
         unsafe {
             res = owa::GPS_GetSV_inView(&mut l);
         }
