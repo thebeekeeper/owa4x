@@ -2,8 +2,7 @@ use owa4x_sys as owa;
 use std::ffi::c_void;
 
 #[derive(Debug, Copy, Clone)]
-pub struct Inet {
-}
+pub struct Inet {}
 
 #[derive(Debug)]
 pub struct InetConfig {
@@ -27,11 +26,10 @@ pub enum InetError {
 
 impl Inet {
     pub fn new() -> Self {
-        Inet { }
+        Inet {}
     }
 
     pub fn initialize(&self, config: InetConfig) -> Result<(), InetError> {
-
         let mut inet_config = owa::TINET_MODULE_CONFIGURATION::default();
         let mut gprs = owa::GPRS_ENHANCED_CONFIGURATION::default();
 
@@ -86,12 +84,10 @@ impl Inet {
             }
         }
 
-
         Ok(())
     }
-
 }
 #[no_mangle]
-    pub extern "C" fn inet_event_handler(_p_to_event: *mut owa::INET_Events) {
-        println!("callback");
-    }
+pub extern "C" fn inet_event_handler(_p_to_event: *mut owa::INET_Events) {
+    println!("callback");
+}

@@ -1,7 +1,7 @@
 use owa4x_sys as owa;
 use std::ffi::c_void;
 
-pub struct Gprs { }
+pub struct Gprs {}
 
 impl Gprs {
     pub fn initialize() -> Result<(), &'static str> {

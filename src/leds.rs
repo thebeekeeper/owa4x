@@ -5,16 +5,15 @@ pub enum PanelLed {
     Yellow,
     Green,
     Red,
-    Orange
+    Orange,
 }
 
 #[derive(Debug, Copy, Clone)]
-pub struct Leds {
-}
+pub struct Leds {}
 
 impl Leds {
     pub fn new() -> Self {
-        Leds { }
+        Leds {}
     }
 
     pub fn set_state(&self, led: PanelLed, status: bool) {

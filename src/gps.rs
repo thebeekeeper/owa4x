@@ -2,8 +2,7 @@ use owa4x_sys as owa;
 use std::ffi::c_void;
 
 #[derive(Debug, Copy, Clone)]
-pub struct Gps {
-}
+pub struct Gps {}
 
 #[derive(Debug, Copy, Clone)]
 pub struct GpsPosition {
@@ -47,7 +46,7 @@ pub struct Satellite {
 
 impl Gps {
     pub fn new() -> Self {
-        Gps { }
+        Gps {}
     }
 
     /// Starts and initializes the GPS receiver
@@ -103,17 +102,24 @@ impl Gps {
     pub fn get_position(&self) -> Option<GpsPosition> {
         trace!("Getting position");
         let mut l: owa::tPOSITION_DATA = Default::default();
-        let mut get_pos = 0xff;
+        let get_pos: i32;
         unsafe {
             get_pos = owa::GPS_GetAllPositionData(&mut l);
         }
         match get_pos as u32 {
-            owa::NO_ERROR => {
-                Some(GpsPosition{ altitude: l.Altitude, horizontal_accuracy: l.HorizAccu,
-                    vertical_accuracy: l.VertiAccu, speed: l.Speed, course: l.Course,
-                    hdop: l.HDOP, vdop: l.VDOP, tdop: l.TDOP, satellite_count: l.numSvs,
-                    latitude: l.LatDecimal, longitude: l.LonDecimal })
-            }
+            owa::NO_ERROR => Some(GpsPosition {
+                altitude: l.Altitude,
+                horizontal_accuracy: l.HorizAccu,
+                vertical_accuracy: l.VertiAccu,
+                speed: l.Speed,
+                course: l.Course,
+                hdop: l.HDOP,
+                vdop: l.VDOP,
+                tdop: l.TDOP,
+                satellite_count: l.numSvs,
+                latitude: l.LatDecimal,
+                longitude: l.LonDecimal,
+            }),
             e => {
                 warn!("Error getting GPS psotion data: {}", e);
                 None
@@ -124,17 +130,27 @@ impl Gps {
     pub fn get_satellites(&self) -> Vec<Satellite> {
         trace!("Getting satellites in view");
         let mut l: owa::tGSV_Data = Default::default();
-        let mut res = 0xff;
+        let res: i32;
         unsafe {
             res = owa::GPS_GetSV_inView(&mut l);
         }
         let mut rval = Vec::new();
         match res as u32 {
             owa::NO_ERROR => {
-                trace!("got satellites response. satellites in view: {}", l.SV_InView);
+                trace!(
+                    "got satellites response. satellites in view: {}",
+                    l.SV_InView
+                );
                 for i in 0..l.SV_InView {
                     let s = l.SV[i as usize];
-                    trace!("satellite {} - id: {}, elevation: {}, azimuth: {}, snr: {}", i, s.SV_Id, s.SV_Elevation, s.SV_Azimuth, s.SV_SNR);
+                    trace!(
+                        "satellite {} - id: {}, elevation: {}, azimuth: {}, snr: {}",
+                        i,
+                        s.SV_Id,
+                        s.SV_Elevation,
+                        s.SV_Azimuth,
+                        s.SV_SNR
+                    );
                     rval.push(Satellite {
                         id: s.SV_Id as u32,
                         elevation: s.SV_Elevation as u32,
@@ -142,7 +158,7 @@ impl Gps {
                         snr: s.SV_SNR as u32,
                     });
                 }
-            },
+            }
             e => {
                 error!("Error getting satellites: {}", e);
             }
