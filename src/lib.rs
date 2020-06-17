@@ -13,19 +13,18 @@ pub mod inet;
 pub mod io;
 pub mod leds;
 
-use crate::leds::Leds;
 use crate::gps::Gps;
 use crate::io::Io;
+use crate::leds::Leds;
 
 use owa4x_sys as owa;
 
 #[derive(Debug, Clone)]
 pub struct OwaError {
-    pub error_code: u32
+    pub error_code: u32,
 }
 
-impl Error for OwaError {
-}
+impl Error for OwaError {}
 
 impl fmt::Display for OwaError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -46,7 +45,7 @@ impl Owa4x {
         Owa4x {
             led: Leds::new(),
             gps: Gps::new(),
-            io: Io { },
+            io: Io {},
         }
     }
 
@@ -60,7 +59,7 @@ impl Owa4x {
         unsafe {
             let error_code = owa::DIGIO_Enable_Wifi(1) as u32;
             if error_code != owa::NO_ERROR {
-                return Err(OwaError{ error_code });
+                return Err(OwaError { error_code });
             }
         }
         Ok(())
@@ -70,7 +69,7 @@ impl Owa4x {
         unsafe {
             let error_code = owa::DIGIO_Enable_Wifi(0) as u32;
             if error_code != owa::NO_ERROR {
-                return Err(OwaError{ error_code });
+                return Err(OwaError { error_code });
             }
         }
         Ok(())
@@ -80,7 +79,7 @@ impl Owa4x {
         unsafe {
             let error_code = owa::DIGIO_Enable_Can(1) as u32;
             if error_code != owa::NO_ERROR {
-                return Err(OwaError{ error_code });
+                return Err(OwaError { error_code });
             }
         }
         Ok(())
@@ -90,7 +89,7 @@ impl Owa4x {
         unsafe {
             let error_code = owa::DIGIO_Enable_Can(0) as u32;
             if error_code != owa::NO_ERROR {
-                return Err(OwaError{ error_code });
+                return Err(OwaError { error_code });
             }
         }
         Ok(())
@@ -104,7 +103,9 @@ impl Owa4x {
             }
             let rtu_start = owa::RTUControl_Start() as u32;
             if rtu_start != owa::NO_ERROR {
-                return Err(OwaError { error_code: rtu_start });
+                return Err(OwaError {
+                    error_code: rtu_start,
+                });
             }
         }
         Ok(())
@@ -114,17 +115,19 @@ impl Owa4x {
         unsafe {
             let io_init = owa::IO_Initialize() as u32;
             if io_init != owa::NO_ERROR {
-                return Err(OwaError { error_code: io_init });
+                return Err(OwaError {
+                    error_code: io_init,
+                });
             }
 
             let io_start = owa::IO_Start() as u32;
             if io_start != owa::NO_ERROR {
                 owa::IO_Finalize();
-                return Err(OwaError { error_code: io_start });
+                return Err(OwaError {
+                    error_code: io_start,
+                });
             }
         }
         Ok(())
     }
 }
-
-

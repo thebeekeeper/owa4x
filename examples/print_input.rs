@@ -1,5 +1,5 @@
 //use owa4x::leds::{Leds, PanelLed};
-use owa4x::io::{DigitalPin, AnalogPin};
+use owa4x::io::{AnalogPin, DigitalPin};
 
 use owa4x::{Owa4x, OwaError};
 

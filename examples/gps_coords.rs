@@ -1,4 +1,4 @@
-use owa4x::{OwaError, Owa4x};
+use owa4x::{Owa4x, OwaError};
 use std::{thread, time};
 
 fn main() -> Result<(), OwaError> {
