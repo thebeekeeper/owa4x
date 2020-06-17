@@ -1,4 +1,3 @@
-use owa4x::gps::Gps;
 use owa4x::{OwaError, Owa4x};
 use std::{thread, time};
 
