@@ -42,4 +42,12 @@ impl Io {
         }
         result as u32
     }
+
+    pub fn set_digital(&self, pin: DigitalPin, on: bool) -> u32 {
+        let mut result: c_int = 0;
+        unsafe {
+            result = owa::DIGIO_Set_DOUT(pin as c_uchar, on as c_uchar);
+        }
+        result as u32
+    }
 }
