@@ -75,6 +75,26 @@ impl Owa4x {
         Ok(())
     }
 
+    pub fn start_bluetooth(&self) -> Result<(), OwaError> {
+        unsafe {
+            let error_code = owa::DIGIO_Enable_Bluetooth(1) as u32;
+            if error_code != owa::NO_ERROR {
+                return Err(OwaError { error_code });
+            }
+        }
+        Ok(())
+    }
+
+    pub fn stop_bluetooth(&self) -> Result<(), OwaError> {
+        unsafe {
+            let error_code = owa::DIGIO_Enable_Bluetooth(0) as u32;
+            if error_code != owa::NO_ERROR {
+                return Err(OwaError { error_code });
+            }
+        }
+        Ok(())
+    }
+
     pub fn start_can(&self) -> Result<(), OwaError> {
         unsafe {
             let error_code = owa::DIGIO_Enable_Can(1) as u32;

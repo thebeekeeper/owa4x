@@ -50,4 +50,12 @@ impl Io {
         }
         result as u32
     }
+
+    pub fn enable_uart(&self) -> u32 {
+        let mut result: c_int = 0;
+        unsafe {
+            result = owa::DIGIO_Enable_Uart5(1);
+        }
+        result as u32
+    }
 }
