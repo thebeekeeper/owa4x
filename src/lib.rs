@@ -150,4 +150,22 @@ impl Owa4x {
         }
         Ok(())
     }
+
+    pub fn take_a_nap(&self, seconds: i32) -> Result<(), OwaError>  {
+        unsafe {
+            let r = owa::RTUSetIncrementalWakeUpTime(seconds) as u32;
+            if r != owa::NO_ERROR {
+                return Err(OwaError {
+                    error_code: r,
+                });
+            }
+            let r = owa::RTUEnterStop(owa::RTU_WKUP_RTC, 0) as u32;
+            if r != owa::NO_ERROR {
+                return Err(OwaError {
+                    error_code: r,
+                });
+            }
+        }
+        Ok(())
+    }
 }

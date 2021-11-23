@@ -7,7 +7,7 @@ fn main() -> Result<(), OwaError> {
     owa.init()?;
 
     owa.io.set_digital(DigitalPin::Pin9, false);
-    std::thread::sleep(std::time::Duration::from_millis(10));
+    std::thread::sleep(std::time::Duration::from_millis(1));
     owa.io.set_digital(DigitalPin::Pin9, true);
 
     Ok(())

@@ -88,6 +88,9 @@ impl Inet {
     }
 }
 #[no_mangle]
-pub extern "C" fn inet_event_handler(_p_to_event: *mut owa::INET_Events) {
+pub extern "C" fn inet_event_handler(p_to_event: *mut owa::INET_Events) {
     println!("callback");
+    unsafe {
+        println!("Event type: {}", (*p_to_event).evType);
+    }
 }
