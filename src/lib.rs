@@ -151,6 +151,14 @@ impl Owa4x {
         Ok(())
     }
 
+    /// Configures the clock subsystem to wakeup after the given number of seconds.  Immediately
+    /// puts the system to sleep.
+    ///
+    /// # Arguments
+    ///
+    /// * `seconds` - Number of seconds to sleep for.  Hardware documentation is light, but
+    /// theoretically could sleep for max(i32) seconds which is about 25k days
+    ///
     pub fn take_a_nap(&self, seconds: i32) -> Result<(), OwaError>  {
         unsafe {
             let r = owa::RTUSetIncrementalWakeUpTime(seconds) as u32;
@@ -159,6 +167,41 @@ impl Owa4x {
                     error_code: r,
                 });
             }
+            let r = owa::RTUEnterStop(owa::RTU_WKUP_RTC, 0) as u32;
+            if r != owa::NO_ERROR {
+                return Err(OwaError {
+                    error_code: r,
+                });
+            }
+        }
+        Ok(())
+    }
+
+    // todo: consider taking a dependency on chrono to shorten this signature
+    
+    /// Schedules a date and time in the future for the system to wake up.  Does not put the system
+    /// to sleep.  See `enter_sleep` to put the system to sleep.
+    pub fn schedule_nap(&self, year: u16, month: u8, day: u8, hour: u8, min: u8, sec: u8) -> Result<(), OwaError> {
+        let td = owa::THW_TIME_DATE {
+            year,
+            month,
+            day,
+            hour,
+            min,
+            sec,
+        };
+        unsafe {
+            let r = owa::RTUSetWakeUpTime(td) as u32;
+            if r != owa::NO_ERROR {
+                return Err(OwaError { error_code: r });
+            }
+        }
+        Ok(())
+    }
+
+    /// Immediately enters sleep mode.  Instructs the system to allow wakeup from the RTC.
+    pub fn enter_sleep(&self) -> Result<(), OwaError> {
+        unsafe {
             let r = owa::RTUEnterStop(owa::RTU_WKUP_RTC, 0) as u32;
             if r != owa::NO_ERROR {
                 return Err(OwaError {
