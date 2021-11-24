@@ -15,5 +15,8 @@ fn main() -> Result<(), OwaError> {
 
     let charge = owa.power.get_battery_state()?;
     println!("Battery charge state: {:?}", charge);
+
+    let pwr_source = owa.power.get_power_source()?;
+    println!("Power source: {:?}", pwr_source);
     Ok(())
 }

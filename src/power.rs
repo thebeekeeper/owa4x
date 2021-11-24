@@ -36,11 +36,33 @@ pub enum WakeupReason {
     DigitalIn9 = 65536,
 }
 
+#[derive(Debug, Eq, PartialEq)]
+pub enum PowerSource {
+    External,
+    Battery,
+}
+
 #[derive(Debug, Copy, Clone)]
 pub struct Power {
 }
 
 impl Power {
+    pub fn get_power_source(&self) -> Result<PowerSource, OwaError> {
+        let mut v: u8 = 255;
+        let r: u32;
+        unsafe {
+            r = owa::DIGIO_Get_PWR_FAIL(&mut v) as u32;
+        }
+        if r!= owa::NO_ERROR {
+            return Err(OwaError::from_or_unknown(r));
+        }
+        match v {
+            0 => Ok(PowerSource::External),
+            1 => Ok(PowerSource::Battery),
+            _ => Err(OwaError::UnknownError)
+        }
+    }
+
     /// Immediately enters sleep mode.  Instructs the system to allow wakeup from the RTC.
     pub fn enter_sleep(&self) -> Result<(), OwaError> {
         unsafe {
