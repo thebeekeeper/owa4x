@@ -1,11 +1,11 @@
+
 use owa4x::{Owa4x, OwaError};
 
 fn main() -> Result<(), OwaError> {
-    println!("Starting i/o subsystem");
     let owa = Owa4x::new();
     owa.init()?;
 
-    owa.take_a_nap(30)?;
-
+    let wakeup_reason = owa.get_wakeup_reason();
+    println!("Wakeup reason: {:?}", wakeup_reason);
     Ok(())
 }
