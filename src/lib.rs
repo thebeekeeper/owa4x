@@ -149,7 +149,7 @@ impl Owa4x {
             if r != owa::NO_ERROR {
                 return Err(OwaError::from_or_unknown(r));
             }
-            let r = owa::RTUEnterStop(owa::RTU_WKUP_RTC, 0) as u32;
+            let r = owa::RTUEnterStop(owa::RTU_WKUP_PWRFAIL | owa::RTU_WKUP_RTC, 0) as u32;
             if r != owa::NO_ERROR {
                 return Err(OwaError::from_or_unknown(r));
             }

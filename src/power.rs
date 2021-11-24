@@ -63,10 +63,10 @@ impl Power {
         }
     }
 
-    /// Immediately enters sleep mode.  Instructs the system to allow wakeup from the RTC.
+    /// Immediately enters sleep mode.  Instructs the system to allow wakeup any source.
     pub fn enter_sleep(&self) -> Result<(), OwaError> {
         unsafe {
-            let r = owa::RTUEnterStop(owa::RTU_WKUP_RTC, 0) as u32;
+            let r = owa::RTUEnterStop(owa::RTU_WKUP_PWRFAIL | owa::RTU_WKUP_RTC, 0) as u32;
             if r != owa::NO_ERROR {
                 return Err(OwaError::try_from(r).unwrap_or(OwaError::UnknownError));
             }
