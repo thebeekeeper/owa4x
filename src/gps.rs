@@ -1,5 +1,6 @@
 use owa4x_sys as owa;
 use std::ffi::c_void;
+use crate::OwaError;
 
 #[derive(Debug, Copy, Clone)]
 pub struct Gps {}
@@ -51,7 +52,7 @@ impl Gps {
 
     /// Starts and initializes the GPS receiver
     /// using the default configuration parameters
-    pub fn initialize(&self) -> bool {
+    pub fn initialize(&self) -> Result<(), OwaError> {
         // there's gotta be a better way to do this
         let input = b"GPS_UBLOX";
         let mut array = [0u8; 20];
@@ -79,27 +80,27 @@ impl Gps {
         unsafe {
             let config_ptr: *mut c_void = &mut config as *mut _ as *mut c_void;
             trace!("Calling init");
-            let gps_init = owa::GPS_Initialize(config_ptr);
-            if gps_init != (owa::NO_ERROR as i32) {
+            let gps_init = owa::GPS_Initialize(config_ptr) as u32;
+            if gps_init != owa::NO_ERROR {
                 trace!("Error configuring gps: {}", gps_init);
-                return false;
+                return Err(OwaError::from_or_unknown(gps_init));
             }
 
             trace!("Calling start");
-            let gps_start = owa::GPS_Start();
-            if gps_start != (owa::NO_ERROR as i32) {
+            let gps_start = owa::GPS_Start() as u32;
+            if gps_start != owa::NO_ERROR {
                 trace!("Error starting gps: {}", gps_start);
-                return false;
+                return Err(OwaError::from_or_unknown(gps_start));
             }
 
             let mut is_active: std::os::raw::c_int = 0;
             owa::GPS_IsActive(&mut is_active);
             trace!("is_active: {}", is_active);
         }
-        return true;
+        Ok(())
     }
 
-    pub fn get_position(&self) -> Option<GpsPosition> {
+    pub fn get_position(&self) -> Result<GpsPosition, OwaError> {
         trace!("Getting position");
         let mut l: owa::tPOSITION_DATA = Default::default();
         let get_pos: i32;
@@ -107,7 +108,7 @@ impl Gps {
             get_pos = owa::GPS_GetAllPositionData(&mut l);
         }
         match get_pos as u32 {
-            owa::NO_ERROR => Some(GpsPosition {
+            owa::NO_ERROR => Ok(GpsPosition {
                 altitude: l.Altitude,
                 horizontal_accuracy: l.HorizAccu,
                 vertical_accuracy: l.VertiAccu,
@@ -122,25 +123,25 @@ impl Gps {
             }),
             e => {
                 warn!("Error getting GPS psotion data: {}", e);
-                None
+                Err(OwaError::from_or_unknown(e))
             }
         }
     }
 
-    pub fn get_satellites(&self) -> Vec<Satellite> {
+    pub fn get_satellites(&self) -> Result<Vec<Satellite>, OwaError> {
         trace!("Getting satellites in view");
         let mut l: owa::tGSV_Data = Default::default();
         let res: i32;
         unsafe {
             res = owa::GPS_GetSV_inView(&mut l);
         }
-        let mut rval = Vec::new();
         match res as u32 {
             owa::NO_ERROR => {
                 trace!(
                     "got satellites response. satellites in view: {}",
                     l.SV_InView
                 );
+                let mut rval = Vec::new();
                 for i in 0..l.SV_InView {
                     let s = l.SV[i as usize];
                     trace!(
@@ -158,11 +159,12 @@ impl Gps {
                         snr: s.SV_SNR as u32,
                     });
                 }
+                Ok(rval)
             }
             e => {
                 error!("Error getting satellites: {}", e);
+                Err(OwaError::from_or_unknown(e))
             }
-        };
-        rval
+        }
     }
 }

@@ -9,7 +9,7 @@ fn main() -> Result<(), OwaError> {
     if let Ok(gsm) = gprs {
         println!("checking signal strength");
         loop {
-            gsm.get_signal_strength(); 
+            gsm.get_signal_strength()?; 
             std::thread::sleep(std::time::Duration::from_millis(1000));
         }
     } else {
