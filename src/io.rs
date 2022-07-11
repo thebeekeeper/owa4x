@@ -35,12 +35,31 @@ impl Io {
         result == 1
     }
 
+    pub fn set_analog_range(&self, pin: AnalogPin, high_range: bool) {
+        unsafe {
+            owa::DIGIO_Set_ADC_RANGE(pin as c_uchar, high_range as c_uchar);
+        }
+    }
+
     pub fn read_analog(&self, pin: AnalogPin) -> u32 {
         let mut result: c_int = 0;
         unsafe {
             owa::ANAGIO_GetAnalogIn(pin as c_int, &mut result);
         }
         result as u32
+    }
+
+    /// Reads a value from the specified analog input pin and scales it to a voltage
+    pub fn read_volts(&self, pin: AnalogPin) -> f32 {
+        let mut result: c_int = 0;
+        unsafe {
+            // since we can't query the current range, we'll only do this read in the extended range
+            // of 0..30.72v
+            owa::DIGIO_Set_ADC_RANGE(pin as c_uchar, 1);
+            owa::ANAGIO_GetAnalogIn(pin as c_int, &mut result);
+        }
+        let scale = 0.007_501_831_501_831;
+        (result as f32) * scale
     }
 
     pub fn set_digital(&self, pin: DigitalPin, on: bool) -> u32 {
