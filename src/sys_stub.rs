@@ -102,7 +102,7 @@ pub struct _TINET_MODULE_CONFIGURATION {
 }
 impl Default for _TINET_MODULE_CONFIGURATION {
     fn default() -> Self {
-        //unsafe { ::std::mem::zeroed() }
+        unsafe { ::std::mem::zeroed() }
     }
 }
 pub type TINET_MODULE_CONFIGURATION = _TINET_MODULE_CONFIGURATION;
