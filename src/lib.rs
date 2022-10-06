@@ -1,9 +1,7 @@
-extern crate owa4x_sys;
 #[macro_use]
 extern crate log;
 #[macro_use]
 extern crate num_derive;
-
 
 pub mod gprs;
 pub mod gps;
@@ -19,7 +17,16 @@ use crate::leds::Leds;
 use crate::power::Power;
 pub use crate::owa_error::OwaError;
 
+#[cfg(target_arch = "arm")]
 use owa4x_sys as owa;
+#[cfg(target_arch = "aarch64")]
+use owa5x_sys as owa;
+
+// use a stub if we're not building for supported hardware
+#[cfg(target_arch = "x86_64")] 
+mod sys_stub;
+#[cfg(target_arch = "x86_64")] 
+use sys_stub as owa;
 
 #[derive(Debug, Copy, Clone)]
 pub struct Owa4x {
@@ -149,7 +156,7 @@ impl Owa4x {
             if r != owa::NO_ERROR {
                 return Err(OwaError::from_or_unknown(r));
             }
-            let r = owa::RTUEnterStop(owa::RTU_WKUP_PWRFAIL | owa::RTU_WKUP_RTC, 0) as u32;
+            let r = owa::RTUEnterStop((owa::RTU_WKUP_PWRFAIL | owa::RTU_WKUP_RTC).into(), 0) as u32;
             if r != owa::NO_ERROR {
                 return Err(OwaError::from_or_unknown(r));
             }

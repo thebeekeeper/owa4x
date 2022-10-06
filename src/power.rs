@@ -1,8 +1,13 @@
-
-use owa4x_sys as owa;
 use crate::OwaError;
 use num_enum::{IntoPrimitive, TryFromPrimitive};
 use std::convert::TryFrom;
+
+#[cfg(target_arch = "arm")]
+use owa4x_sys as owa;
+#[cfg(target_arch = "aarch64")]
+use owa5x_sys as owa;
+#[cfg(target_arch = "x86_64")]
+use crate::sys_stub as owa;
 
 #[derive(Debug, Eq, PartialEq, IntoPrimitive, TryFromPrimitive)]
 #[repr(u8)]
@@ -66,7 +71,7 @@ impl Power {
     /// Immediately enters sleep mode.  Instructs the system to allow wakeup any source.
     pub fn enter_sleep(&self) -> Result<(), OwaError> {
         unsafe {
-            let r = owa::RTUEnterStop(owa::RTU_WKUP_PWRFAIL | owa::RTU_WKUP_RTC, 0) as u32;
+            let r = owa::RTUEnterStop((owa::RTU_WKUP_PWRFAIL | owa::RTU_WKUP_RTC).into(), 0) as u32;
             if r != owa::NO_ERROR {
                 return Err(OwaError::try_from(r).unwrap_or(OwaError::UnknownError));
             }
@@ -116,7 +121,9 @@ impl Power {
     }
 
     pub fn get_wakeup_reason(&self) -> Result<WakeupReason, OwaError> {
-        let mut reason: u32 = 0;
+        todo!("wakeup reason");
+        /*
+        let mut reason: u64 = 0;
         let res: u32;
         unsafe {
             res = owa::RTUGetWakeUpReason(&mut reason) as u32;
@@ -129,5 +136,6 @@ impl Power {
             Ok(e) => Ok(e),
             Err(_) => Err(OwaError::ParseError),
         }
+        */
     }
 }

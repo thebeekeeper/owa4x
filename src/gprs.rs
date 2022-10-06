@@ -1,6 +1,12 @@
-use owa4x_sys as owa;
 use std::ffi::c_void;
 use crate::owa_error::OwaError;
+
+#[cfg(target_arch = "arm")]
+use owa4x_sys as owa;
+#[cfg(target_arch = "aarch64")]
+use owa5x_sys as owa;
+#[cfg(target_arch = "x86_64")]
+use crate::sys_stub as owa;
 
 pub struct Gprs {
     pub signal_strength: u8,

@@ -1,5 +1,11 @@
-use owa4x_sys as owa;
 use std::os::raw::{c_int, c_uchar};
+
+#[cfg(target_arch = "arm")]
+use owa4x_sys as owa;
+#[cfg(target_arch = "aarch64")]
+use owa5x_sys as owa;
+#[cfg(target_arch = "x86_64")]
+use crate::sys_stub as owa;
 
 #[derive(Debug, Copy, Clone)]
 pub enum DigitalPin {
