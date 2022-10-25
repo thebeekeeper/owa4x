@@ -51,6 +51,23 @@ pub struct Satellite {
     pub snr: u32,
 }
 
+pub enum GpsPort {
+    Port1,
+    Port4,
+}
+
+pub struct GpsConfig {
+    pub port: GpsPort,
+}
+
+impl Default for GpsConfig {
+    fn default() -> Self {
+        GpsConfig {
+            port: GpsPort::Port1,
+        }
+    }
+}
+
 impl Gps {
     pub fn new() -> Self {
         Gps {}
@@ -59,6 +76,11 @@ impl Gps {
     /// Starts and initializes the GPS receiver
     /// using the default configuration parameters
     pub fn initialize(&self) -> Result<(), OwaError> {
+        let cfg = GpsConfig::default();
+        self.initialize_with_config(&cfg)
+    }
+
+    pub fn initialize_with_config(&self, cfg: &GpsConfig) -> Result<(), OwaError> {
         // there's gotta be a better way to do this
         let input = b"GPS_UBLOX";
         let mut array = [0u8; 20];
@@ -72,6 +94,11 @@ impl Gps {
             *y = *x;
         }
 
+        let p = match cfg.port {
+            GpsPort::Port1 => owa::COM1,
+            GpsPort::Port4 => owa::COM4,
+        };
+
         // it's unclear to me if there are any other values that
         // could reasonably go here
         let mut config = owa::TGPS_MODULE_CONFIGURATION {
@@ -80,7 +107,7 @@ impl Gps {
             ParamLength: owa::CS8 as u8,
             ParamParity: owa::IGNPAR as i32,
             ProtocolName: nmea,
-            GPSPort: owa::COM1 as u8,
+            GPSPort: p as u8,
         };
 
         unsafe {
