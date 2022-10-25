@@ -5,6 +5,7 @@ pub const RTU_WKUP_PWRFAIL: u32 = 2;
 pub const RTU_WKUP_RTC: u32 = 64;
 pub const INET_BEARER_ENHANCED_GPRS: u32 = 2;
 pub const COM1: u32 = 0;
+pub const COM4: u32 = 3;
 pub const IGNPAR: u32 = 4;
 pub const CS8: u32 = 48;
 pub const B115200: u32 = 4098;
