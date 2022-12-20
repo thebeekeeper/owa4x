@@ -2,9 +2,9 @@ use std::os::raw::{c_int, c_uchar};
 
 #[cfg(target_arch = "arm")]
 use owa4x_sys as owa;
-#[cfg(target_arch = "aarch64")]
+#[cfg(all(target_arch = "aarch64", not(target_os = "macos")))]
 use owa5x_sys as owa;
-#[cfg(target_arch = "x86_64")]
+#[cfg(any(target_arch = "x86_64", all(target_arch = "aarch64", target_os = "macos")))]
 use crate::sys_stub as owa;
 
 #[derive(Debug, Copy, Clone)]
