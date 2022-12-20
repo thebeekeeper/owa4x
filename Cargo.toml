@@ -1,6 +1,6 @@
 [package]
 name = "owa4x"
-version = "0.4.2"
+version = "0.4.3"
 authors = ["Nick Gamroth <thebeekeeper@gmail.com>"]
 edition = "2018"
 description = "Idiomatic wrapper around the owa4x-sys crate"
@@ -18,8 +18,10 @@ num_enum = "0.5"
 env_logger = "0.7.1"
 
 [target.'cfg(target_arch = "arm")'.dependencies]
-owa4x-sys = "0.1.5"
+#owa4x-sys = { path = "../owa4x-sys" }
+owa4x-sys = "0.1.6"
 
 [target.'cfg(target_arch = "aarch64")'.dependencies]
+#owa5x-sys = { path = "../owa5x-sys" }
 owa5x-sys = "0.1.0"
 

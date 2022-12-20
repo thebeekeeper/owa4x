@@ -78,6 +78,14 @@ impl Inet {
 
         trace!("Calling inet init");
         unsafe {
+            trace!("Setting PDP context");
+            let r = owa::GSM_DefinePDPContext(&mut gprs) as u32;
+            if r != owa::NO_ERROR {
+                trace!("GSM_DefinePDPContext error: {}", r);
+                let e: InetError = num::FromPrimitive::from_u32(r).unwrap();
+                return Err(e);
+            }
+
             let r = owa::iNet_Initialize(net_ptr) as u32;
             if r != owa::NO_ERROR {
                 trace!("inet init: {}", r);
