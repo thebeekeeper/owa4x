@@ -19,7 +19,7 @@ env_logger = "0.7.1"
 
 [target.'cfg(target_arch = "arm")'.dependencies]
 #owa4x-sys = { path = "../owa4x-sys" }
-owa4x-sys = "0.1.6"
+owa4x-sys = "0.1.7"
 
 [target.'cfg(all(target_arch = "aarch64", not(target_os = "macos")))'.dependencies]
 owa5x-sys = "0.1.0"
