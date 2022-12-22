@@ -19,10 +19,9 @@ pub use crate::owa_error::OwaError;
 
 #[cfg(target_arch = "arm")]
 use owa4x_sys as owa;
-#[cfg(any(
-    target_arch = "x86_64",
+#[cfg(
     all(target_arch = "aarch64", not(target_os = "macos"))
-))]
+)]
 use owa5x_sys as owa;
 
 // use a stub if we're not building for supported hardware
