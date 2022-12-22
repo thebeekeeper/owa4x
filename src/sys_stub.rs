@@ -13,7 +13,9 @@ pub type speed_t = ::std::os::raw::c_uint;
 
 pub fn GSM_DefinePDPContext(
     pConfiguration: *mut GPRS_ENHANCED_CONFIGURATION,
-) -> ::std::os::raw::c_int;
+) -> ::std::os::raw::c_int {
+    0
+}
 
 pub struct THW_TIME_DATE {
     pub sec: ::std::os::raw::c_uchar,
