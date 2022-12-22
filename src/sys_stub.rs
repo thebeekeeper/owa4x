@@ -11,6 +11,10 @@ pub const CS8: u32 = 48;
 pub const B115200: u32 = 4098;
 pub type speed_t = ::std::os::raw::c_uint;
 
+pub fn GSM_DefinePDPContext(
+    pConfiguration: *mut GPRS_ENHANCED_CONFIGURATION,
+) -> ::std::os::raw::c_int;
+
 pub struct THW_TIME_DATE {
     pub sec: ::std::os::raw::c_uchar,
     pub min: ::std::os::raw::c_uchar,
@@ -217,3 +221,5 @@ pub struct _TGSM_MODULE_CONFIGURATION {
     //pub gsm_action: ::std::option::Option<unsafe extern "C" fn(arg1: *mut gsmEvents_s)>,
 }
 pub type TGSM_MODULE_CONFIGURATION = _TGSM_MODULE_CONFIGURATION;
+
+
