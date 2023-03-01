@@ -35,7 +35,13 @@ impl Inet {
         Inet {}
     }
 
+    // wrapping the new call so we can maintain the method signature and avoid a breaking change
+    // need to no call the PDP context function so that older units don't crash
     pub fn initialize(&self, config: InetConfig) -> Result<(), InetError> {
+        self.initialize_with_pdp(config, false)
+    }
+
+    pub fn initialize_with_pdp(&self, config: InetConfig, init_pdp: bool) -> Result<(), InetError> {
         let mut inet_config = owa::TINET_MODULE_CONFIGURATION::default();
         let mut gprs = owa::GPRS_ENHANCED_CONFIGURATION::default();
 
@@ -78,12 +84,16 @@ impl Inet {
 
         trace!("Calling inet init");
         unsafe {
-            trace!("Setting PDP context");
-            let r = owa::GSM_DefinePDPContext(&mut gprs) as u32;
-            if r != owa::NO_ERROR {
-                trace!("GSM_DefinePDPContext error: {}", r);
-                let e: InetError = num::FromPrimitive::from_u32(r).unwrap();
-                return Err(e);
+            // units with older firmware from the vendor don't have this function defined which
+            // causes a crash if we call it
+            if init_pdp {
+                trace!("Setting PDP context");
+                let r = owa::GSM_DefinePDPContext(&mut gprs) as u32;
+                if r != owa::NO_ERROR {
+                    trace!("GSM_DefinePDPContext error: {}", r);
+                    let e: InetError = num::FromPrimitive::from_u32(r).unwrap();
+                    return Err(e);
+                }
             }
 
             let r = owa::iNet_Initialize(net_ptr) as u32;
