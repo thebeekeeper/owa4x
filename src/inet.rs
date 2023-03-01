@@ -84,6 +84,13 @@ impl Inet {
 
         trace!("Calling inet init");
         unsafe {
+            let mut ver = [0u8; 40];
+            let r = owa::GSM_GetVersion(ver.as_mut_ptr()) as u32;
+            if r != owa::NO_ERROR {
+                let version_str = std::str::from_utf8(&ver).unwrap();
+                trace!("GSM library version: {}", version_str);
+            }
+
             // units with older firmware from the vendor don't have this function defined which
             // causes a crash if we call it
             if init_pdp {
