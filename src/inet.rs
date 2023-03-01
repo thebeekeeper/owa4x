@@ -38,10 +38,6 @@ impl Inet {
     // wrapping the new call so we can maintain the method signature and avoid a breaking change
     // need to no call the PDP context function so that older units don't crash
     pub fn initialize(&self, config: InetConfig) -> Result<(), InetError> {
-        self.initialize_with_pdp(config, false)
-    }
-
-    pub fn initialize_with_pdp(&self, config: InetConfig, init_pdp: bool) -> Result<(), InetError> {
         let mut inet_config = owa::TINET_MODULE_CONFIGURATION::default();
         let mut gprs = owa::GPRS_ENHANCED_CONFIGURATION::default();
 
@@ -90,10 +86,13 @@ impl Inet {
                 let version_str = std::str::from_utf8(&ver).unwrap();
                 trace!("GSM library version: {}", version_str);
             }
+            else {
+                warn!("{}", r);
+            }
 
             // units with older firmware from the vendor don't have this function defined which
             // causes a crash if we call it
-            if init_pdp {
+            #[cfg(feature = "pdp")] {
                 trace!("Setting PDP context");
                 let r = owa::GSM_DefinePDPContext(&mut gprs) as u32;
                 if r != owa::NO_ERROR {
@@ -120,8 +119,8 @@ impl Inet {
 }
 #[no_mangle]
 pub extern "C" fn inet_event_handler(p_to_event: *mut owa::INET_Events) {
-    println!("callback");
+    trace!("callback");
     unsafe {
-        println!("Event type: {}", (*p_to_event).evType);
+        trace!("Event type: {}", (*p_to_event).evType);
     }
 }
