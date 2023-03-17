@@ -225,3 +225,20 @@ pub struct _TGSM_MODULE_CONFIGURATION {
 pub type TGSM_MODULE_CONFIGURATION = _TGSM_MODULE_CONFIGURATION;
 
 
+pub fn GSM_GetVersion(wVersion: *mut ::std::os::raw::c_uchar) -> ::std::os::raw::c_int {
+    0
+}
+pub fn iNet_GetVersion(wVersion: *mut ::std::os::raw::c_uchar) -> ::std::os::raw::c_int {
+    0
+}
+pub fn GPS_GetVersion(wVersion: *mut ::std::os::raw::c_uchar) -> ::std::os::raw::c_int {
+    0
+}
+pub fn IO_GetVersion(wVersion: *mut ::std::os::raw::c_uchar) -> ::std::os::raw::c_int {
+    0
+}
+
+pub fn RTUControl_GetVersion(wVersion: *mut ::std::os::raw::c_uchar) -> ::std::os::raw::c_int {
+    0
+}
+
