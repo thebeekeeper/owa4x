@@ -16,9 +16,6 @@ num_enum = "0.5"
 semver = "1.0"
 libloading = "0.8"
 
-[features]
-pdp = []
-
 [dev-dependencies]
 env_logger = "0.7.1"
 

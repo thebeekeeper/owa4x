@@ -3,6 +3,8 @@ extern crate log;
 #[macro_use]
 extern crate num_derive;
 
+use semver::Version;
+
 pub mod gprs;
 pub mod gps;
 pub mod inet;
@@ -203,4 +205,44 @@ impl Owa4x {
             Err(_) => Err(OwaError::ParseError),
         }
     }
+}
+
+pub enum OwaLibrary {
+    GPS,
+    GSM,
+    INET,
+    IO,
+    RTU
+}
+
+
+pub fn get_library_version(lib: OwaLibrary) -> Result<Version, OwaError> {
+    let mut ver = [0u8; 40];
+    unsafe {
+        let r = match lib {
+            OwaLibrary::GPS => {
+                owa::GPS_GetVersion(ver.as_mut_ptr()) as u32
+            },
+            OwaLibrary::GSM => {
+                owa::GSM_GetVersion(ver.as_mut_ptr()) as u32
+            },
+            OwaLibrary::INET => {
+                owa::iNet_GetVersion(ver.as_mut_ptr()) as u32
+            },
+            OwaLibrary::IO => {
+                owa::IO_GetVersion(ver.as_mut_ptr()) as u32
+            },
+            OwaLibrary::RTU => {
+                owa::RTUControl_GetVersion(ver.as_mut_ptr()) as u32
+            },
+        };
+        if r != owa::NO_ERROR {
+            return Err(OwaError::from_or_unknown(r));
+        }
+    }
+    let version_str = std::str::from_utf8(&ver).unwrap();
+    let parts: Vec<&str> = version_str.split_whitespace().collect();
+    let v = Version::parse(parts[3].trim_matches(char::from(0))).unwrap();
+    trace!("GSM library version: {:?}", v);
+    return Ok(v);
 }
