@@ -38,10 +38,6 @@ impl Inet {
     // wrapping the new call so we can maintain the method signature and avoid a breaking change
     // need to no call the PDP context function so that older units don't crash
     pub fn initialize(&self, config: InetConfig) -> Result<(), InetError> {
-        self.initialize_with_pdp(config, false)
-    }
-
-    pub fn initialize_with_pdp(&self, config: InetConfig, init_pdp: bool) -> Result<(), InetError> {
         let mut inet_config = owa::TINET_MODULE_CONFIGURATION::default();
         let mut gprs = owa::GPRS_ENHANCED_CONFIGURATION::default();
 
@@ -90,10 +86,15 @@ impl Inet {
                 let version_str = std::str::from_utf8(&ver).unwrap();
                 trace!("GSM library version: {}", version_str);
             }
+            else {
+                warn!("{}", r);
+            }
+
+            call_pdp_context_if_available(&mut gprs);
 
             // units with older firmware from the vendor don't have this function defined which
             // causes a crash if we call it
-            if init_pdp {
+            /*#[cfg(feature = "pdp")] {
                 trace!("Setting PDP context");
                 let r = owa::GSM_DefinePDPContext(&mut gprs) as u32;
                 if r != owa::NO_ERROR {
@@ -101,7 +102,7 @@ impl Inet {
                     let e: InetError = num::FromPrimitive::from_u32(r).unwrap();
                     return Err(e);
                 }
-            }
+            }*/
 
             let r = owa::iNet_Initialize(net_ptr) as u32;
             if r != owa::NO_ERROR {
@@ -117,11 +118,30 @@ impl Inet {
 
         Ok(())
     }
+
 }
+
+pub fn call_pdp_context_if_available(cfg: &mut owa::GPRS_ENHANCED_CONFIGURATION) {
+    println!("Calling init pdp context");
+    unsafe {
+        let lib = libloading::Library::new("/lib/libGSM_Module.so").expect("Failed to find inet shared library");
+
+        let f: Result<libloading::Symbol<unsafe extern fn(*mut crate::owa::GPRS_ENHANCED_CONFIGURATION) -> u16>, libloading::Error> = lib.get(b"GSM_DefinePDPContext");
+        if let Ok(func) = f {
+            println!("loaded function");
+            func(cfg);
+        }
+        else {
+            println!("function doesnt exist");
+        }
+    }
+    println!("done");
+}
+
 #[no_mangle]
 pub extern "C" fn inet_event_handler(p_to_event: *mut owa::INET_Events) {
-    println!("callback");
+    trace!("callback");
     unsafe {
-        println!("Event type: {}", (*p_to_event).evType);
+        trace!("Event type: {}", (*p_to_event).evType);
     }
 }
