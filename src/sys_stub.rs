@@ -71,6 +71,7 @@ pub fn GSM_Initialize(wConfiguration: *mut ::std::os::raw::c_void) -> ::std::os:
     pub fn RTUGetBatteryState(BattState: *mut ::std::os::raw::c_uchar) -> ::std::os::raw::c_int {0}
     pub fn RTUGetAD_V_IN(ad_v_in: *mut f32) -> ::std::os::raw::c_int {0}
     pub fn RTUGetAD_VBAT_MAIN(ad_vbat_main: *mut f32) -> ::std::os::raw::c_int {0}
+    pub fn RTUGetAD_TEMP(deg_c: *mut i32) -> ::std::os::raw::c_int {0}
     pub fn DIGIO_Get_PWR_FAIL(wValue: *mut ::std::os::raw::c_uchar) -> ::std::os::raw::c_int {0}
     pub fn DIGIO_Set_PPS_GPS(wValue: ::std::os::raw::c_uchar) -> ::std::os::raw::c_int {0}
     pub fn DIGIO_Set_LED_SW0(wValue: ::std::os::raw::c_uchar) -> ::std::os::raw::c_int {0}
