@@ -205,6 +205,18 @@ impl Owa4x {
             Err(_) => Err(OwaError::ParseError),
         }
     }
+
+    pub fn get_temperature(&self) -> Result<i32, OwaError> {
+        let mut deg = 0;
+        let res: u32;
+        unsafe {
+            res = owa::RTUGetAD_TEMP(&mut deg) as u32;
+        }
+        if res != owa::NO_ERROR {
+            return Err(OwaError::from_or_unknown(res));
+        }
+        Ok(deg)
+    }
 }
 
 pub enum OwaLibrary {
