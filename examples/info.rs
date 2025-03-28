@@ -4,6 +4,9 @@ fn main() -> Result<(), OwaError> {
     let owa = Owa4x::new();
     owa.init()?;
 
+    let err = OwaError::FmsAlreadyInitialized;
+    println!("error display: {}", err);
+
     let s = owa.get_serial_number()?;
     println!("Serial Number: {}", s);
 

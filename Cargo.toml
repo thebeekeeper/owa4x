@@ -1,6 +1,6 @@
 [package]
 name = "owa4x"
-version = "0.4.12"
+version = "0.4.13"
 authors = ["Nick Gamroth <thebeekeeper@gmail.com>"]
 edition = "2018"
 description = "Idiomatic wrapper around the owa4x-sys crate"
@@ -15,6 +15,8 @@ num-derive = "0.3"
 num_enum = "0.5"
 semver = "1.0"
 libloading = "0.8"
+strum = "0.27"
+strum_macros = "0.27"
 
 [dev-dependencies]
 env_logger = "0.7.1"

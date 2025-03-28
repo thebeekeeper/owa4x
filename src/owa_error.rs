@@ -1,9 +1,9 @@
 use num_enum::{IntoPrimitive, TryFromPrimitive};
 use std::convert::TryFrom;
 use std::error::Error;
-use std::fmt;
+use strum_macros::Display;
 
-#[derive(Debug, Eq, PartialEq, IntoPrimitive, TryFromPrimitive)]
+#[derive(Display, Debug, Eq, PartialEq, IntoPrimitive, TryFromPrimitive)]
 #[repr(u32)]
 pub enum OwaError {
     NoError = 0,
@@ -258,11 +258,3 @@ impl OwaError {
 }
 
 impl Error for OwaError {}
-
-impl fmt::Display for OwaError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        //let s = format!("OWA error: {}", self.error_code);
-        write!(f, "OWA error")
-    }
-}
-
