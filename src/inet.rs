@@ -1,11 +1,15 @@
 use std::ffi::c_void;
 
+#[cfg(any(
+    target_arch = "x86_64",
+    all(target_arch = "aarch64", target_os = "macos")
+))]
+use crate::sys_stub as owa;
+use crate::OwaError;
 #[cfg(target_arch = "arm")]
 use owa4x_sys as owa;
 #[cfg(all(target_arch = "aarch64", not(target_os = "macos")))]
 use owa5x_sys as owa;
-#[cfg(any(target_arch = "x86_64", all(target_arch = "aarch64", target_os = "macos")))]
-use crate::sys_stub as owa;
 
 #[derive(Debug, Copy, Clone)]
 pub struct Inet {}
@@ -19,17 +23,6 @@ pub struct InetConfig {
     pub ap_name: String,
 }
 
-#[derive(FromPrimitive, Debug)]
-pub enum InetError {
-    AlreadyRunning = 600,
-    NotInitialized = 601,
-    NotStarted = 602,
-    InterfaceNotReady = 603,
-    IpNotAvailable = 604,
-    GsmOnVoice = 605,
-    GsmOnCall = 606,
-}
-
 impl Inet {
     pub fn new() -> Self {
         Inet {}
@@ -37,7 +30,7 @@ impl Inet {
 
     // wrapping the new call so we can maintain the method signature and avoid a breaking change
     // need to no call the PDP context function so that older units don't crash
-    pub fn initialize(&self, config: InetConfig) -> Result<(), InetError> {
+    pub fn initialize(&self, config: InetConfig) -> Result<(), OwaError> {
         let mut inet_config = owa::TINET_MODULE_CONFIGURATION::default();
         let mut gprs = owa::GPRS_ENHANCED_CONFIGURATION::default();
 
@@ -85,45 +78,71 @@ impl Inet {
             if r != owa::NO_ERROR {
                 let version_str = std::str::from_utf8(&ver).unwrap();
                 trace!("GSM library version: {}", version_str);
-            }
-            else {
+            } else {
                 warn!("{}", r);
             }
 
             call_pdp_context_if_available(&mut gprs);
 
-            let r = owa::iNet_Initialize(net_ptr) as u32;
-            if r != owa::NO_ERROR {
-                trace!("inet init: {}", r);
-                let e: InetError = num::FromPrimitive::from_u32(r).unwrap();
-                return Err(e);
-            }
-            let r = owa::iNet_Start() as u32;
-            if r != owa::NO_ERROR {
-                trace!("inet start: {}", r);
-            }
+        }
+        let r = unsafe { owa::iNet_Initialize(net_ptr) as u32 };
+        if r != owa::NO_ERROR {
+            trace!("inet init: {}", r);
+            return Err(OwaError::from_or_unknown(r));
+        }
+
+        let r = unsafe { owa::iNet_Start() as u32 };
+        if r != owa::NO_ERROR {
+            trace!("inet start: {}", r);
+            return Err(OwaError::from_or_unknown(r));
         }
 
         Ok(())
     }
 
+    pub fn is_active(&self) -> Result<bool, OwaError> {
+        let mut is_active = 0;
+        let e = unsafe { owa::iNet_IsActive(&mut is_active) as u32 };
+        if e != owa::NO_ERROR {
+            Err(OwaError::from_or_unknown(e))
+        } else {
+            let b = is_active == 1;
+            Ok(b)
+        }
+    }
+
+    pub fn get_ip_address(&self) -> Result<String, OwaError> {
+        let mut s = vec![0u8; 16];
+        let e = unsafe { owa::iNet_GetIPAddress(s.as_mut_ptr()) as u32 };
+        if e != owa::NO_ERROR {
+            Err(OwaError::from_or_unknown(e))
+        } else {
+            let ip_str = std::ffi::CString::new(s).unwrap().into_string().unwrap();
+            Ok(ip_str)
+        }
+    }
 }
 
 pub fn call_pdp_context_if_available(cfg: &mut owa::GPRS_ENHANCED_CONFIGURATION) {
-    println!("Calling init pdp context");
+    debug!("Calling init pdp context");
     unsafe {
-        let lib = libloading::Library::new("/lib/libGSM_Module.so").expect("Failed to find inet shared library");
+        let lib = libloading::Library::new("/lib/libGSM_Module.so")
+            .expect("Failed to find inet shared library");
 
-        let f: Result<libloading::Symbol<unsafe extern fn(*mut crate::owa::GPRS_ENHANCED_CONFIGURATION) -> u16>, libloading::Error> = lib.get(b"GSM_DefinePDPContext");
+        let f: Result<
+            libloading::Symbol<
+                unsafe extern "C" fn(*mut crate::owa::GPRS_ENHANCED_CONFIGURATION) -> u16,
+            >,
+            libloading::Error,
+        > = lib.get(b"GSM_DefinePDPContext");
         if let Ok(func) = f {
-            println!("loaded function");
+            debug!("loaded function");
             func(cfg);
-        }
-        else {
-            println!("function doesnt exist");
+        } else {
+            debug!("function doesnt exist");
         }
     }
-    println!("done");
+    debug!("done");
 }
 
 #[no_mangle]

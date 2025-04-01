@@ -11,6 +11,18 @@ pub const CS8: u32 = 48;
 pub const B115200: u32 = 4098;
 pub type speed_t = ::std::os::raw::c_uint;
 
+pub fn GSM_Finalize() -> ::std::os::raw::c_int {
+    return 0;
+}
+
+pub fn iNet_IsActive(wActive: *mut ::std::os::raw::c_int) -> ::std::os::raw::c_int {
+    return 0;
+}
+
+pub fn iNet_GetIPAddress(wIPAddress: *mut ::std::os::raw::c_char) -> ::std::os::raw::c_int {
+    return 0;
+}
+
 pub fn GSM_DefinePDPContext(
     pConfiguration: *mut GPRS_ENHANCED_CONFIGURATION,
 ) -> ::std::os::raw::c_int {
