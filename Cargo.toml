@@ -1,6 +1,6 @@
 [package]
 name = "owa4x"
-version = "0.4.14"
+version = "0.4.15"
 authors = ["Nick Gamroth <thebeekeeper@gmail.com>"]
 edition = "2018"
 description = "Idiomatic wrapper around the owa4x-sys crate"

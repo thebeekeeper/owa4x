@@ -19,7 +19,8 @@ pub fn iNet_IsActive(wActive: *mut ::std::os::raw::c_int) -> ::std::os::raw::c_i
     return 0;
 }
 
-pub fn iNet_GetIPAddress(wIPAddress: *mut ::std::os::raw::c_char) -> ::std::os::raw::c_int {
+//pub fn iNet_GetIPAddress(wIPAddress: *mut ::std::os::raw::c_char) -> ::std::os::raw::c_int {
+pub fn iNet_GetIPAddress(wIPAddress: *mut ::std::os::raw::c_uchar) -> ::std::os::raw::c_int {
     return 0;
 }
 
